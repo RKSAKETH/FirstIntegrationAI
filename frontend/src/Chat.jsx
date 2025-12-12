@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { askGemini } from "./gemini";
 
 export default function Chat() {
   const [input, setInput] = useState("");
   const [reply, setReply] = useState("");
 
-  async function handleAsk() {
-    const answer = await askGemini(input);
-    console.log("AI reply:", answer);  // Verify here
-    setReply(answer);
+  const handleAsk= async () => {
+    const response = await fetch("http://localhost:3000/api/gemini/ask",{
+        method : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt:input })
+    })
+    const data = await response.json();
+    setReply(data.output);
   }
 
   return (
@@ -19,7 +22,6 @@ export default function Chat() {
       />
 
       <button onClick={handleAsk}>Ask Gemini</button>
-      <p>{input}</p>
       <p>Response: {reply}</p>
     </div>
   );
